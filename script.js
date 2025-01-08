@@ -18,6 +18,29 @@ class Boundary {
     }
 }
 
+class Player {
+    constructor( {position, velocity}) {
+        this.position = position
+        this.velocity = velocity
+        this.radius = 15
+    }
+    draw() {
+        // drawing circle
+        // need to begin path and close it 
+        c.beginPath()
+        // in the arc, we give x, y, radius, and its angles in radians, so we give 0 radians, and pi * 2, to give full circle
+        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
+        c.fillStyle = 'yellow'
+        c.fill()
+        c.closePath()
+    }
+
+    update() {
+        this.draw()
+        this.position.x += this.velocity.x
+    }
+}
+
 // creating a representation of what the map should look like
 // everytime I loop over a dash, i want to generate a new square
 const map = [
@@ -30,6 +53,19 @@ const map = [
 ]
 
 const boundaries = []
+// create our player instance
+const player = new Player( {
+    position: {
+        // make the position halfway of boundaries so we arent 
+        // on top of a boundary
+        x: Boundary.width + Boundary.width / 2,
+        y: Boundary.height + Boundary.height / 2
+    },
+    velocity: {
+        x: 0,
+        y: 0
+    }
+})
 
 // for each row in the map
 map.forEach( (row, rowIndex) => {
@@ -52,4 +88,31 @@ map.forEach( (row, rowIndex) => {
 })
 boundaries.forEach((boundary) => {
     boundary.draw();
+})
+
+player.draw()
+
+// adding event listeners to move player
+// destructure key, cause we only care about that object
+// if we put in event we will see an object
+window.addEventListener('keydown', ({ key }) => {
+    switch (key) {
+        // Move Up with W
+        case 'w':
+            player.velocity.y = -5
+            break
+        // Move Left with A
+        case 'a':
+            player.velocity.y = -5
+            break
+        // Move Down with S
+        case 's':
+            player.velocity.y = 5
+            break
+        // Move Right with D
+        case 'd':
+            player.velocity.y = 5
+            break
+    }
+    console.log(player.velocity)
 })
