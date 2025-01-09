@@ -44,14 +44,6 @@ class Player {
 
 // creating a representation of what the map should look like
 // everytime I loop over a dash, i want to generate a new square
-const map = [
-    ['-', '-', '-', '-', '-', '-'],
-    ['-', ' ', ' ', ' ', ' ', '-'],
-    ['-', ' ', '-', '-', ' ', '-'],
-    ['-', ' ', ' ', ' ', ' ', '-'],
-    ['-', '-', '-', '-', '-', '-'],
-
-]
 
 const boundaries = []
 // create our player instance
@@ -67,6 +59,21 @@ const player = new Player( {
         y: 0
     }
 })
+
+// const keys = {
+//     w: {
+//         pressed: false,
+//     }
+// }
+
+const map = [
+    ['-', '-', '-', '-', '-', '-'],
+    ['-', ' ', ' ', ' ', ' ', '-'],
+    ['-', ' ', '-', '-', ' ', '-'],
+    ['-', ' ', ' ', ' ', ' ', '-'],
+    ['-', '-', '-', '-', '-', '-'],
+
+]
 
 // for each row in the map
 map.forEach( (row, rowIndex) => {
@@ -92,6 +99,9 @@ function animate() {
     // when we finsih one frame, its going to call this animate function
     // creates infinite loop till we tell it to stop
     requestAnimationFrame(animate);
+    
+    // we want to clear the canvas, so we arent leaving behind a trail and drawing a player on each frame, but instead drawing new at each canvasw
+    c.clearRect(0, 0, canvas.width, canvas.height);
     boundaries.forEach((boundary) => {
         boundary.draw();
     })
@@ -109,20 +119,46 @@ window.addEventListener('keydown', ({ key }) => {
     switch (key) {
         // Move Up with W
         case 'w':
+            player.velocity.x = 0
             player.velocity.y = -5
             break
         // Move Left with A
         case 'a':
+            player.velocity.y = 0
             player.velocity.x = -5
             break
         // Move Down with S
         case 's':
+            player.velocity.x = 0
             player.velocity.y = 5
             break
         // Move Right with D
         case 'd':
+            player.velocity.y = 0
             player.velocity.x = 5
             break
     }
     console.log(player.velocity)
 })
+
+// window.addEventListener('keyup', ({ key }) => {
+//     switch (key) {
+//         // Move Up with W
+//         case 'w':
+//             player.velocity.y = 0
+//             break
+//         // Move Left with A
+//         case 'a':
+//             player.velocity.x = 0
+//             break
+//         // Move Down with S
+//         case 's':
+//             player.velocity.y = 0
+//             break
+//         // Move Right with D
+//         case 'd':
+//             player.velocity.x = 0
+//             break
+//     }
+//     console.log(player.velocity)
+// })
