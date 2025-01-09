@@ -34,10 +34,11 @@ class Player {
         c.fill()
         c.closePath()
     }
-
+    // call this update function for every frame in an animation loop
     update() {
         this.draw()
         this.position.x += this.velocity.x
+        this.position.y += this.velocity.y
     }
 }
 
@@ -86,11 +87,20 @@ map.forEach( (row, rowIndex) => {
         }
     })
 })
-boundaries.forEach((boundary) => {
-    boundary.draw();
-})
 
-player.draw()
+function animate() {
+    // when we finsih one frame, its going to call this animate function
+    // creates infinite loop till we tell it to stop
+    requestAnimationFrame(animate);
+    boundaries.forEach((boundary) => {
+        boundary.draw();
+    })
+    
+    player.update()
+}
+
+animate();
+
 
 // adding event listeners to move player
 // destructure key, cause we only care about that object
@@ -103,7 +113,7 @@ window.addEventListener('keydown', ({ key }) => {
             break
         // Move Left with A
         case 'a':
-            player.velocity.y = -5
+            player.velocity.x = -5
             break
         // Move Down with S
         case 's':
@@ -111,7 +121,7 @@ window.addEventListener('keydown', ({ key }) => {
             break
         // Move Right with D
         case 'd':
-            player.velocity.y = 5
+            player.velocity.x = 5
             break
     }
     console.log(player.velocity)
