@@ -67,11 +67,11 @@ const player = new Player( {
 // }
 
 const map = [
-    ['-', '-', '-', '-', '-', '-'],
-    ['-', ' ', ' ', ' ', ' ', '-'],
-    ['-', ' ', '-', '-', ' ', '-'],
-    ['-', ' ', ' ', ' ', ' ', '-'],
-    ['-', '-', '-', '-', '-', '-'],
+    ['-', '-', '-', '-', '-', '-', '-'],
+    ['-', ' ', ' ', ' ', ' ', ' ', '-'],
+    ['-', ' ', '-', ' ', '-', ' ', '-'],
+    ['-', ' ', ' ', ' ', ' ', ' ', '-'],
+    ['-', '-', '-', '-', '-', '-', '-'],
 
 ]
 
@@ -104,6 +104,22 @@ function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     boundaries.forEach((boundary) => {
         boundary.draw();
+        
+        // checking if the top of the player is colliding with the bottom of a boundary
+        // checking if right side of the player collding with right side of boundary
+        // checking if bottom of player collides with top of boundary
+        // checking if left side of boundary collides with left side boundary
+
+        // including velocity in our checks, so we can allow movemenet after colliding
+        if (
+            player.position.y - player.radius + player.velocity.y <= boundary.position.y + boundary.height &&
+            player.position.x + player.radius + player.velocity.x >= boundary.position.x &&
+            player.position.y + player.radius + player.velocity.y >= boundary.position.y &&
+            player.position.x - player.radius + player.velocity.x <= boundary.position.x + boundary.width) {
+                console.log('we are colliding');
+                player.velocity.x = 0;
+                player.velocity.y = 0;
+            }
     })
     
     player.update()
