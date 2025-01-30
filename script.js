@@ -60,11 +60,22 @@ const player = new Player( {
     }
 })
 
-// const keys = {
-//     w: {
-//         pressed: false,
-//     }
-// }
+const keys = {
+    w: {
+        pressed: false
+    },
+    a: {
+        pressed: false
+    },
+    s: {
+        pressed: false
+    },
+    d: {
+        pressed: false
+    }
+}
+
+let lastKey = ''
 
 const map = [
     ['-', '-', '-', '-', '-', '-', '-'],
@@ -95,6 +106,15 @@ map.forEach( (row, rowIndex) => {
     })
 })
 
+function circleCollidesWithRectangle( {circle, rectangle }) {
+    return (
+        circle.position.y - circle.radius + circle.velocity.y <= rectangle.position.y + rectangle.height &&
+        circle.position.x + circle.radius + circle.velocity.x >= rectangle.position.x &&
+        circle.position.y + circle.radius + circle.velocity.y >= rectangle.position.y &&
+        circle.position.x - circle.radius + circle.velocity.x <= rectangle.position.x + rectangle.width
+    )
+}
+
 function animate() {
     // when we finsih one frame, its going to call this animate function
     // creates infinite loop till we tell it to stop
@@ -111,18 +131,29 @@ function animate() {
         // checking if left side of boundary collides with left side boundary
 
         // including velocity in our checks, so we can allow movemenet after colliding
-        if (
-            player.position.y - player.radius + player.velocity.y <= boundary.position.y + boundary.height &&
-            player.position.x + player.radius + player.velocity.x >= boundary.position.x &&
-            player.position.y + player.radius + player.velocity.y >= boundary.position.y &&
-            player.position.x - player.radius + player.velocity.x <= boundary.position.x + boundary.width) {
-                console.log('we are colliding');
-                player.velocity.x = 0;
-                player.velocity.y = 0;
-            }
+        // if (
+        //     circleCollidesWithRectangle({
+        //         circle: player,
+        //         rectangle: boundary
+        //     })) {
+        //         player.velocity.x = 0;
+        //         player.velocity.y = 0;
+        //     }
     })
     
     player.update()
+    player.velocity.x = 0;
+    player.velocity.y = 0;
+
+    if (keys.w.pressed && lastKey === 'w') {
+        player.velocity.y = -5;
+    } else if (keys.a.pressed && lastKey === 'a') {
+        player.velocity.x = -5;
+    } else if (keys.s.pressed && lastKey === 's') {
+        player.velocity.y = 5;
+    } else if (keys.d.pressed && lastKey === 'd') {
+        player.velocity.x = 5;
+    }
 }
 
 animate();
@@ -135,46 +166,49 @@ window.addEventListener('keydown', ({ key }) => {
     switch (key) {
         // Move Up with W
         case 'w':
-            player.velocity.x = 0
-            player.velocity.y = -5
+            keys.w.pressed = true
+            lastKey = 'w';
             break
         // Move Left with A
         case 'a':
-            player.velocity.y = 0
-            player.velocity.x = -5
+            keys.a.pressed = true;
+            lastKey = 'a'
             break
         // Move Down with S
         case 's':
-            player.velocity.x = 0
-            player.velocity.y = 5
+            keys.s.pressed = true;
+            lastKey = 's'
             break
         // Move Right with D
         case 'd':
-            player.velocity.y = 0
-            player.velocity.x = 5
+            keys.d.pressed = true;
+            lastKey = 'd'
             break
     }
-    console.log(player.velocity)
+    console.log(keys.d.pressed)
+    console.log(keys.s.pressed)
+
 })
 
-// window.addEventListener('keyup', ({ key }) => {
-//     switch (key) {
-//         // Move Up with W
-//         case 'w':
-//             player.velocity.y = 0
-//             break
-//         // Move Left with A
-//         case 'a':
-//             player.velocity.x = 0
-//             break
-//         // Move Down with S
-//         case 's':
-//             player.velocity.y = 0
-//             break
-//         // Move Right with D
-//         case 'd':
-//             player.velocity.x = 0
-//             break
-//     }
-//     console.log(player.velocity)
-// })
+window.addEventListener('keyup', ({ key }) => {
+    switch (key) {
+        // Move Up with W
+        case 'w':
+            keys.w.pressed = false
+            break
+        // Move Left with A
+        case 'a':
+            keys.a.pressed = false
+            break
+        // Move Down with S
+        case 's':
+            keys.s.pressed = false
+            break
+        // Move Right with D
+        case 'd':
+            keys.d.pressed = false
+            break
+    }
+    console.log(keys.d.pressed)
+    console.log(keys.s.pressed)
+})
