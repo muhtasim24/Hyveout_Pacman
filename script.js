@@ -122,6 +122,57 @@ function animate() {
     
     // we want to clear the canvas, so we arent leaving behind a trail and drawing a player on each frame, but instead drawing new at each canvasw
     c.clearRect(0, 0, canvas.width, canvas.height);
+
+
+    if (keys.w.pressed && lastKey === 'w') {
+        for (let i = 0; i < boundaries.length; i++) {
+            const boundary = boundaries[i];
+            if (
+                circleCollidesWithRectangle({
+                circle: {
+                    ...player, 
+                    velocity: { // duplicating our player object, so we can edit the property
+                    x: 0,
+                    y: -5,
+                }
+            }, 
+            rectangle: boundary
+            })
+            ) {
+                player.velocity.y = 0;
+                break;
+            } else {
+                player.velocity.y = -5;
+            }
+        }
+        } else if (keys.a.pressed && lastKey === 'a') {
+            player.velocity.x = -5;
+        } else if (keys.s.pressed && lastKey === 's') {
+            for (let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if (
+                    circleCollidesWithRectangle({
+                    circle: {
+                        ...player, 
+                        velocity: { // duplicating our player object, so we can edit the property
+                        x: 0,
+                        y: 5,
+                    }
+                }, 
+                rectangle: boundary
+                })
+                ) {
+                    player.velocity.y = 0;
+                    break;
+                } else {
+                    player.velocity.y = 5;
+                }
+            }
+        } else if (keys.d.pressed && lastKey === 'd') {
+            player.velocity.x = 5;
+        }
+
+    
     boundaries.forEach((boundary) => {
         boundary.draw();
         
@@ -131,29 +182,16 @@ function animate() {
         // checking if left side of boundary collides with left side boundary
 
         // including velocity in our checks, so we can allow movemenet after colliding
-        // if (
-        //     circleCollidesWithRectangle({
-        //         circle: player,
-        //         rectangle: boundary
-        //     })) {
-        //         player.velocity.x = 0;
-        //         player.velocity.y = 0;
-        //     }
+        if (circleCollidesWithRectangle({
+            circle: player, 
+            rectangle: boundary
+        })) {
+            player.velocity.x = 0;
+            player.velocity.y = 0;
+        }
     })
     
     player.update()
-    player.velocity.x = 0;
-    player.velocity.y = 0;
-
-    if (keys.w.pressed && lastKey === 'w') {
-        player.velocity.y = -5;
-    } else if (keys.a.pressed && lastKey === 'a') {
-        player.velocity.x = -5;
-    } else if (keys.s.pressed && lastKey === 's') {
-        player.velocity.y = 5;
-    } else if (keys.d.pressed && lastKey === 'd') {
-        player.velocity.x = 5;
-    }
 }
 
 animate();
