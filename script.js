@@ -82,6 +82,8 @@ const map = [
     ['-', ' ', ' ', ' ', ' ', ' ', '-'],
     ['-', ' ', '-', ' ', '-', ' ', '-'],
     ['-', ' ', ' ', ' ', ' ', ' ', '-'],
+    ['-', ' ', '-', ' ', '-', ' ', '-'],
+    ['-', ' ', ' ', ' ', ' ', ' ', '-'],
     ['-', '-', '-', '-', '-', '-', '-'],
 
 ]
@@ -146,7 +148,26 @@ function animate() {
             }
         }
         } else if (keys.a.pressed && lastKey === 'a') {
-            player.velocity.x = -5;
+            for (let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if (
+                    circleCollidesWithRectangle({
+                    circle: {
+                        ...player, 
+                        velocity: { // duplicating our player object, so we can edit the property
+                        x: -5,
+                        y: 0,
+                    }
+                }, 
+                rectangle: boundary
+                })
+                ) {
+                    player.velocity.x = 0;
+                    break;
+                } else {
+                    player.velocity.x = -5;
+                }
+            }
         } else if (keys.s.pressed && lastKey === 's') {
             for (let i = 0; i < boundaries.length; i++) {
                 const boundary = boundaries[i];
@@ -169,7 +190,26 @@ function animate() {
                 }
             }
         } else if (keys.d.pressed && lastKey === 'd') {
-            player.velocity.x = 5;
+            for (let i = 0; i < boundaries.length; i++) {
+                const boundary = boundaries[i];
+                if (
+                    circleCollidesWithRectangle({
+                    circle: {
+                        ...player, 
+                        velocity: { // duplicating our player object, so we can edit the property
+                        x: 5,
+                        y: 0,
+                    }
+                }, 
+                rectangle: boundary
+                })
+                ) {
+                    player.velocity.x = 0;
+                    break;
+                } else {
+                    player.velocity.x = 5;
+                }
+            }
         }
 
     
