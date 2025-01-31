@@ -55,6 +55,7 @@ class Ghost {
       this.color = color
       this.prevCollisions = [] // list of previous collisions, so when a path opens up, ghost can go through it
       this.speed = 2;
+      this.scared = false
   }
   draw() {
       // drawing circle
@@ -62,7 +63,7 @@ class Ghost {
       c.beginPath()
       // in the arc, we give x, y, radius, and its angles in radians, so we give 0 radians, and pi * 2, to give full circle
       c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
-      c.fillStyle = this.color
+      c.fillStyle = this.scared ? 'blue' : this.color // if the ghosts are scared they will be blue, if not normal
       c.fill()
       c.closePath()
   }
@@ -503,7 +504,25 @@ function animate() {
                 }
             }
         }
+
+    // Ghost-Player Collision
+    for (let i = ghosts.length - 1; 0 <= i; i--) {
+      const ghost = ghosts[i]
+      // collision with player
+      if (Math.hypot(
+        ghost.position.x - player.position.x,
+        ghost.position.y - player.position.y) <
+        ghost.radius + player.radius) {
+
+          if (ghost.scared) {
+            ghosts.splice(i, 1); // if we collide with the ghost while its scared, remove it
+          } else {
+            cancelAnimationFrame(animationId)
+            console.log('you lose');
+          }
+        }
     
+    }
     // Power Up Collision
     for (let i = powerUps.length - 1; 0 <= i; i--) {
       const powerUp = powerUps[i]
@@ -516,8 +535,17 @@ function animate() {
           
           powerUps.splice(i, 1);
           // make ghosts scared 
+          ghosts.forEach( (ghost) => {
+            ghost.scared = true
+            // set a timer for how long the power up is active
+            setTimeout( () => { 
+              ghost.scared = false
+              console.log(ghost.scared)
+            }, 5000) // after 3 seconds, ghosts will no longer be scared
+          })
       }
     }
+
     // Pellet Collision
     for (let i = pellets.length - 1; 0 < i; i--) {
         const pellet = pellets[i]
@@ -559,14 +587,6 @@ function animate() {
     ghosts.forEach( (ghost) => {
       ghost.update();
       
-      // collision with player
-      if (Math.hypot(
-        ghost.position.x - player.position.x,
-        ghost.position.y - player.position.y) <
-        ghost.radius + player.radius) {
-          cancelAnimationFrame(animationId)
-          console.log('you lose');
-        }
       const collisions = []
       // detect for collision for every single boundary for the ghost
       boundaries.forEach( (boundary) => {
