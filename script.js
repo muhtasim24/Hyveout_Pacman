@@ -46,6 +46,32 @@ class Player {
     }
 }
 
+class Ghost {
+  constructor( {position, velocity, color = 'red'}) {
+      this.position = position
+      this.velocity = velocity
+      this.radius = 15
+      this.color = color
+      this.prevCollisions = [] // list of previous collisions, so when a path opens up, ghost can go through it
+  }
+  draw() {
+      // drawing circle
+      // need to begin path and close it 
+      c.beginPath()
+      // in the arc, we give x, y, radius, and its angles in radians, so we give 0 radians, and pi * 2, to give full circle
+      c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
+      c.fillStyle = this.color
+      c.fill()
+      c.closePath()
+  }
+  // call this update function for every frame in an animation loop
+  update() {
+      this.draw()
+      this.position.x += this.velocity.x
+      this.position.y += this.velocity.y
+  }
+}
+
 class Pellet {
     constructor( { position }) {
         this.position = position
@@ -70,6 +96,20 @@ const pellets = []
 // creating a representation of what the map should look like
 // everytime I loop over a dash, i want to generate a new square
 const boundaries = []
+
+const ghosts = [
+  new Ghost( {
+    position: {
+      x: Boundary.width * 6 + Boundary.width / 2,
+      y: Boundary.height + Boundary.height / 2
+    },
+    velocity: {
+      x: 5,
+      y: 0
+    }
+  })
+]
+
 // create our player instance
 const player = new Player( {
     position: {
@@ -461,6 +501,130 @@ function animate() {
     })
     
     player.update()
+
+    // GHOST COLLISION
+    ghosts.forEach( (ghost) => {
+      ghost.update();
+      
+      const collisions = []
+      // detect for collision for every single boundary for the ghost
+      boundaries.forEach( (boundary) => {
+        if (
+          !collisions.includes('right') &&
+          circleCollidesWithRectangle({
+          circle: {
+              ...ghost, 
+              velocity: { // duplicating our player object, so we can edit the property
+              x: 5,
+              y: 0,
+          }
+          }, 
+          rectangle: boundary
+          })
+        ) {
+          collisions.push('right')
+        }
+        if (
+          !collisions.includes('left') &&
+          circleCollidesWithRectangle({
+          circle: {
+              ...ghost, 
+              velocity: { // duplicating our player object, so we can edit the property
+              x: -5,
+              y: 0,
+          }
+          }, 
+          rectangle: boundary
+          })
+        ) {
+          collisions.push('left')
+        }
+        if (
+          !collisions.includes('up') &&
+          circleCollidesWithRectangle({
+          circle: {
+              ...ghost, 
+              velocity: { // duplicating our player object, so we can edit the property
+              x: 0,
+              y: -5,
+          }
+          }, 
+          rectangle: boundary
+          })
+        ) {
+          collisions.push('up')
+        }
+        if (
+          !collisions.includes('down') &&
+          circleCollidesWithRectangle({
+          circle: {
+              ...ghost, 
+              velocity: { // duplicating our player object, so we can edit the property
+              x: 0,
+              y: 5,
+          }
+          }, 
+          rectangle: boundary
+          })
+        ) {
+          collisions.push('down')
+        }
+      })
+      if (collisions.length > ghost.prevCollisions.length) {
+        ghost.prevCollisions = collisions
+      }
+      // strignify is going to change collisions array into a string
+      // this handles finding an open path
+      if (JSON.stringify(collisions) !== JSON.stringify(ghost.prevCollisions)) {
+        console.log(collisions);
+        console.log(ghost.prevCollisions)
+
+        if (ghost.velocity.x > 0) {
+          ghost.prevCollisions.push('right')
+        } else if (ghost.velocity.x < 0) {
+          ghost.prevCollisions.push('left')
+        } else if (ghost.velocity.y < 0) {
+          ghost.prevCollisions.push('up')
+        } else if (ghost.velocity.y > 0) {
+          ghost.prevCollisions.push('down')
+        }
+        
+        // filter out any collisions that dont exist with the first array
+        const pathways = ghost.prevCollisions.filter((collision) => {
+          return !collisions.includes(collision)
+        })
+        console.log({pathways})
+        
+        // get a random direction for the ghost to go
+        // needs to be a whole number, so we use Math.floor to round
+        const direction = pathways[Math.floor(Math.random() * pathways.length)] 
+        console.log({direction})
+
+        switch (direction) {
+          case 'down':
+            ghost.velocity.y = 5;
+            ghost.velocity.x = 0;
+            break;
+          
+          case 'up':
+            ghost.velocity.y = -5;
+            ghost.velocity.x = 0;
+            break;
+          
+          case 'right':
+            ghost.velocity.y = 0;
+            ghost.velocity.x = 5;
+            break;
+          
+          case 'left':
+            ghost.velocity.y = 0;
+            ghost.velocity.x = -5;
+            break;
+        }
+
+        ghost.prevCollisions = [] // reset the collisions, since once the ghost moves new direction, we have a whole net set of collisions
+      }
+    })
 }
 
 animate();
