@@ -47,12 +47,14 @@ class Player {
 }
 
 class Ghost {
+  static speed = 2; // static speed for when creating that very first new ghost
   constructor( {position, velocity, color = 'red'}) {
       this.position = position
       this.velocity = velocity
       this.radius = 15
       this.color = color
       this.prevCollisions = [] // list of previous collisions, so when a path opens up, ghost can go through it
+      this.speed = 2;
   }
   draw() {
       // drawing circle
@@ -104,10 +106,21 @@ const ghosts = [
       y: Boundary.height + Boundary.height / 2
     },
     velocity: {
-      x: 5,
+      x: Ghost.speed,
       y: 0
     }
-  })
+  }),
+  new Ghost( {
+    position: {
+      x: Boundary.width * 6 + Boundary.width / 2,
+      y: Boundary.height * 3 + Boundary.height / 2
+    },
+    velocity: {
+      x: Ghost.speed,
+      y: 0
+    },
+    color: 'pink'
+  }),
 ]
 
 // create our player instance
@@ -362,19 +375,21 @@ const map = [
   })
 
 function circleCollidesWithRectangle( {circle, rectangle }) {
-    return (
-        circle.position.y - circle.radius + circle.velocity.y <= rectangle.position.y + rectangle.height &&
-        circle.position.x + circle.radius + circle.velocity.x >= rectangle.position.x &&
-        circle.position.y + circle.radius + circle.velocity.y >= rectangle.position.y &&
-        circle.position.x - circle.radius + circle.velocity.x <= rectangle.position.x + rectangle.width
-    )
+  const padding = Boundary.width / 2 - circle.radius - 1;
+  return (
+      circle.position.y - circle.radius + circle.velocity.y <= rectangle.position.y + rectangle.height + padding &&
+      circle.position.x + circle.radius + circle.velocity.x >= rectangle.position.x - padding &&
+      circle.position.y + circle.radius + circle.velocity.y >= rectangle.position.y - padding &&
+      circle.position.x - circle.radius + circle.velocity.x <= rectangle.position.x + rectangle.width + padding
+  )
 }
+
+let animationId;
 
 function animate() {
     // when we finsih one frame, its going to call this animate function
     // creates infinite loop till we tell it to stop
-    requestAnimationFrame(animate);
-    
+    animationId = requestAnimationFrame(animate);
     // we want to clear the canvas, so we arent leaving behind a trail and drawing a player on each frame, but instead drawing new at each canvasw
     c.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -506,6 +521,14 @@ function animate() {
     ghosts.forEach( (ghost) => {
       ghost.update();
       
+      // collision with player
+      if (Math.hypot(
+        ghost.position.x - player.position.x,
+        ghost.position.y - player.position.y) <
+        ghost.radius + player.radius) {
+          cancelAnimationFrame(animationId)
+          console.log('you lose');
+        }
       const collisions = []
       // detect for collision for every single boundary for the ghost
       boundaries.forEach( (boundary) => {
@@ -515,7 +538,7 @@ function animate() {
           circle: {
               ...ghost, 
               velocity: { // duplicating our player object, so we can edit the property
-              x: 5,
+              x: ghost.speed,
               y: 0,
           }
           }, 
@@ -530,7 +553,7 @@ function animate() {
           circle: {
               ...ghost, 
               velocity: { // duplicating our player object, so we can edit the property
-              x: -5,
+              x: -ghost.speed,
               y: 0,
           }
           }, 
@@ -546,7 +569,7 @@ function animate() {
               ...ghost, 
               velocity: { // duplicating our player object, so we can edit the property
               x: 0,
-              y: -5,
+              y: -ghost.speed,
           }
           }, 
           rectangle: boundary
@@ -561,7 +584,7 @@ function animate() {
               ...ghost, 
               velocity: { // duplicating our player object, so we can edit the property
               x: 0,
-              y: 5,
+              y: ghost.speed,
           }
           }, 
           rectangle: boundary
@@ -602,23 +625,23 @@ function animate() {
 
         switch (direction) {
           case 'down':
-            ghost.velocity.y = 5;
+            ghost.velocity.y = ghost.speed;
             ghost.velocity.x = 0;
             break;
           
           case 'up':
-            ghost.velocity.y = -5;
+            ghost.velocity.y = -ghost.speed;
             ghost.velocity.x = 0;
             break;
           
           case 'right':
             ghost.velocity.y = 0;
-            ghost.velocity.x = 5;
+            ghost.velocity.x = ghost.speed;
             break;
           
           case 'left':
             ghost.velocity.y = 0;
-            ghost.velocity.x = -5;
+            ghost.velocity.x = -ghost.speed;
             break;
         }
 
