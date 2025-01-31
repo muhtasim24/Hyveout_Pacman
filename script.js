@@ -91,14 +91,28 @@ class Pellet {
     }
 }
 
+class PowerUp {
+  constructor( { position }) {
+      this.position = position
+      this.radius = 10
+  }
+  draw() {
+      // drawing circle
+      // need to begin path and close it 
+      c.beginPath()
+      // in the arc, we give x, y, radius, and its angles in radians, so we give 0 radians, and pi * 2, to give full circle
+      c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
+      c.fillStyle = 'white'
+      c.fill()
+      c.closePath()
+  }
+}
 
-const pellets = []
-
-
+const powerUps = [];
+const pellets = [];
 // creating a representation of what the map should look like
 // everytime I loop over a dash, i want to generate a new square
-const boundaries = []
-
+const boundaries = [];
 const ghosts = [
   new Ghost( {
     position: {
@@ -370,6 +384,16 @@ const map = [
                 })
             )
             break
+        case 'p':
+          powerUps.push(
+              new PowerUp({
+              position: {
+                  x: j * Boundary.width + Boundary.width / 2,
+                  y: i * Boundary.height + Boundary.height / 2
+              }
+              })
+          )
+          break
       }
     })
   })
@@ -479,7 +503,21 @@ function animate() {
                 }
             }
         }
-
+    
+    // Power Up Collision
+    for (let i = powerUps.length - 1; 0 <= i; i--) {
+      const powerUp = powerUps[i]
+      powerUp.draw();
+      // where player collides with powerup
+      if (Math.hypot(
+        powerUp.position.x - player.position.x,
+        powerUp.position.y - player.position.y) <
+        powerUp.radius + player.radius) {
+          
+          powerUps.splice(i, 1);
+          // make ghosts scared 
+      }
+    }
     // Pellet Collision
     for (let i = pellets.length - 1; 0 < i; i--) {
         const pellet = pellets[i]
