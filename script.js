@@ -1,6 +1,8 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d') // 
 
+const scoreEl = document.querySelector('#scoreEl');
+
 canvas.width = window.innerWidth // size of the window's width
 canvas.height = window.innerHeight // size of the window's height
 
@@ -98,6 +100,7 @@ const keys = {
 }
 
 let lastKey = ''
+let score = 0;
 
 function createImage(source) {
     const image = new Image()
@@ -421,7 +424,8 @@ function animate() {
                 }
             }
         }
-    
+
+    // Pellet Collision
     for (let i = pellets.length - 1; 0 < i; i--) {
         const pellet = pellets[i]
         pellet.draw()
@@ -433,6 +437,8 @@ function animate() {
             pellet.radius + player.radius) {
                 console.log("touching");
                 pellets.splice(i, 1) // removing pellet of that index
+                score += 10;
+                scoreEl.innerHTML = score;
         }
     }
 
