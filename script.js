@@ -504,7 +504,7 @@ function animate() {
                 }
             }
         }
-
+        
     // Ghost-Player Collision
     for (let i = ghosts.length - 1; 0 <= i; i--) {
       const ghost = ghosts[i]
@@ -514,15 +514,15 @@ function animate() {
         ghost.position.y - player.position.y) <
         ghost.radius + player.radius) {
 
-          if (ghost.scared) {
-            ghosts.splice(i, 1); // if we collide with the ghost while its scared, remove it
-          } else {
-            cancelAnimationFrame(animationId)
-            console.log('you lose');
-          }
+        if (ghost.scared) {
+          ghosts.splice(i, 1); // if we collide with the ghost while its scared, remove it
+        } else {
+          cancelAnimationFrame(animationId)
+          console.log('you lose');
         }
-    
+      }
     }
+
     // Power Up Collision
     for (let i = powerUps.length - 1; 0 <= i; i--) {
       const powerUp = powerUps[i]
@@ -547,7 +547,7 @@ function animate() {
     }
 
     // Pellet Collision
-    for (let i = pellets.length - 1; 0 < i; i--) {
+    for (let i = pellets.length - 1; 0 <= i; i--) {
         const pellet = pellets[i]
         pellet.draw()
         
@@ -556,11 +556,17 @@ function animate() {
             pellet.position.x - player.position.x,
             pellet.position.y - player.position.y) <
             pellet.radius + player.radius) {
-                console.log("touching");
                 pellets.splice(i, 1) // removing pellet of that index
                 score += 10;
                 scoreEl.innerHTML = score;
         }
+    }
+
+    // Win Condition
+    console.log(pellets.length)
+    if (pellets.length === 0) {
+      cancelAnimationFrame(animationId)
+      console.log('you win')
     }
 
     boundaries.forEach((boundary) => {
@@ -657,9 +663,6 @@ function animate() {
       // strignify is going to change collisions array into a string
       // this handles finding an open path
       if (JSON.stringify(collisions) !== JSON.stringify(ghost.prevCollisions)) {
-        console.log(collisions);
-        console.log(ghost.prevCollisions)
-
         if (ghost.velocity.x > 0) {
           ghost.prevCollisions.push('right')
         } else if (ghost.velocity.x < 0) {
@@ -674,12 +677,11 @@ function animate() {
         const pathways = ghost.prevCollisions.filter((collision) => {
           return !collisions.includes(collision)
         })
-        console.log({pathways})
+      
         
         // get a random direction for the ghost to go
         // needs to be a whole number, so we use Math.floor to round
         const direction = pathways[Math.floor(Math.random() * pathways.length)] 
-        console.log({direction})
 
         switch (direction) {
           case 'down':
@@ -737,8 +739,6 @@ window.addEventListener('keydown', ({ key }) => {
             lastKey = 'd'
             break
     }
-    console.log(keys.d.pressed)
-    console.log(keys.s.pressed)
 
 })
 
@@ -761,6 +761,4 @@ window.addEventListener('keyup', ({ key }) => {
             keys.d.pressed = false
             break
     }
-    console.log(keys.d.pressed)
-    console.log(keys.s.pressed)
 })
