@@ -27,13 +27,16 @@ class Player {
         this.position = position
         this.velocity = velocity
         this.radius = 15
+        this.radians = 0.75
+        this.openRate = 0.12
     }
     draw() {
         // drawing circle
         // need to begin path and close it 
         c.beginPath()
         // in the arc, we give x, y, radius, and its angles in radians, so we give 0 radians, and pi * 2, to give full circle
-        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2)
+        c.arc(this.position.x, this.position.y, this.radius, this.radians , Math.PI * 2 - this.radians)
+        c.lineTo(this.position.x, this.position.y) // opens up face look like mouth, chomping animation
         c.fillStyle = 'yellow'
         c.fill()
         c.closePath()
@@ -43,6 +46,13 @@ class Player {
         this.draw()
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y
+
+        // switching radians from 0 to 0.75 to look like chomping animation
+        if (this.radians < 0 || this.radians > 0.75) {
+          this.openRate = -this.openRate
+        }
+        this.radians += this.openRate
+
     }
 }
 
@@ -563,7 +573,6 @@ function animate() {
     }
 
     // Win Condition
-    console.log(pellets.length)
     if (pellets.length === 0) {
       cancelAnimationFrame(animationId)
       console.log('you win')
