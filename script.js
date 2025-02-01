@@ -29,10 +29,16 @@ class Player {
         this.radius = 15
         this.radians = 0.75
         this.openRate = 0.12
+        this.rotation = 0;
     }
     draw() {
         // drawing circle
         // need to begin path and close it 
+        c.save()
+        // handling rotation of pacman when moving in directions
+        c.translate(this.position.x, this.position.y)
+        c.rotate(this.rotation)
+        c.translate(-this.position.x, -this.position.y)
         c.beginPath()
         // in the arc, we give x, y, radius, and its angles in radians, so we give 0 radians, and pi * 2, to give full circle
         c.arc(this.position.x, this.position.y, this.radius, this.radians , Math.PI * 2 - this.radians)
@@ -40,6 +46,7 @@ class Player {
         c.fillStyle = 'yellow'
         c.fill()
         c.closePath()
+        c.restore()
     }
     // call this update function for every frame in an animation loop
     update() {
@@ -717,6 +724,16 @@ function animate() {
         ghost.prevCollisions = [] // reset the collisions, since once the ghost moves new direction, we have a whole net set of collisions
       }
     })
+    // changing rotation of pacman based on direction its moving
+    if (player.velocity.x > 0) {
+      player.rotation = 0
+    } else if (player.velocity.x < 0) {
+      player.rotation = Math.PI
+    } else if (player.velocity.y > 0) {
+      player.rotation = Math.PI / 2
+    } else if (player.velocity.y < 0) {
+      player.rotation = Math.PI * 1.5
+    }
 }
 
 animate();
