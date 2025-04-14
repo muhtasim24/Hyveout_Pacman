@@ -788,3 +788,42 @@ window.addEventListener('keyup', ({ key }) => {
             break
     }
 })
+
+// Add event listeners to buttons to simulate key press behavior
+document.getElementById('w').addEventListener('mousedown', () => {
+  keys.w.pressed = true;
+  lastKey = 'w';
+});
+
+document.getElementById('a').addEventListener('mousedown', () => {
+  keys.a.pressed = true;
+  lastKey = 'a';
+});
+
+document.getElementById('s').addEventListener('mousedown', () => {
+  keys.s.pressed = true;
+  lastKey = 's';
+});
+
+document.getElementById('d').addEventListener('mousedown', () => {
+  keys.d.pressed = true;
+  lastKey = 'd';
+});
+
+// Same logic for when buttons are released (mouseup)
+document.getElementById('w').addEventListener('mouseup', () => {
+  keys.w.pressed = false;
+});
+
+document.getElementById('a').addEventListener('mouseup', () => {
+  keys.a.pressed = false;
+});
+
+document.getElementById('s').addEventListener('mouseup', () => {
+  keys.s.pressed = false;
+});
+
+document.getElementById('d').addEventListener('mouseup', () => {
+  keys.d.pressed = false;
+});
+
