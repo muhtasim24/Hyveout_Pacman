@@ -827,3 +827,41 @@ document.getElementById('d').addEventListener('mouseup', () => {
   keys.d.pressed = false;
 });
 
+document.getElementById('w').addEventListener('touchstart', (e) => {
+  e.preventDefault(); // Prevents mobile default behavior
+  keys.w.pressed = true;
+  lastKey = 'w';
+});
+document.getElementById('a').addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  keys.a.pressed = true;
+  lastKey = 'a';
+});
+document.getElementById('s').addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  keys.s.pressed = true;
+  lastKey = 's';
+});
+document.getElementById('d').addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  keys.d.pressed = true;
+  lastKey = 'd';
+});
+
+// On touch end, reset the pressed state
+document.getElementById('w').addEventListener('touchend', (e) => {
+  e.preventDefault();
+  keys.w.pressed = false;
+});
+document.getElementById('a').addEventListener('touchend', (e) => {
+  e.preventDefault();
+  keys.a.pressed = false;
+});
+document.getElementById('s').addEventListener('touchend', (e) => {
+  e.preventDefault();
+  keys.s.pressed = false;
+});
+document.getElementById('d').addEventListener('touchend', (e) => {
+  e.preventDefault();
+  keys.d.pressed = false;
+});
