@@ -3,12 +3,32 @@ const c = canvas.getContext('2d') //
 
 const scoreEl = document.querySelector('#scoreEl');
 
-canvas.width = window.innerWidth // size of the window's width
-canvas.height = window.innerHeight // size of the window's height
+const map = [
+  ['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
+  ['|', '.', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
+  ['|', '.', 'b', '.', '[', '7', ']', '.', 'b', '.', '|'],
+  ['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
+  ['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
+  ['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
+  ['|', '.', 'b', '.', '[', '+', ']', '.', 'b', '.', '|'],
+  ['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
+  ['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
+  ['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
+  ['|', '.', 'b', '.', '[', '5', ']', '.', 'b', '.', '|'],
+  ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'p', '|'],
+  ['4', '-', '-', '-', '-', '-', '-', '-', '-', '-', '3']
+]
+
+const tileCount = map[0].length;
+const maxTileSize = 40;
+const tileSize = Math.min(Math.floor(window.innerWidth / tileCount), maxTileSize);
+
+canvas.width = tileSize * tileCount;
+canvas.height = tileSize * map.length;
 
 class Boundary {
-    static width = 40;
-    static height = 40;
+    static width = tileSize;
+    static height = tileSize;
     constructor({ position, image }){
         this.position = position;
         this.width = 40;
@@ -190,20 +210,10 @@ let score = 0;
 function createImage(source) {
     const image = new Image()
     image.src = source
+    image.classList.add('image');
     return image
 }
 // b= block, 1-4 = corner 1-4, | = vertical lines, - = horizontal lines
-const map = [
-  ['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
-    ['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
-    ['|', '.', 'b', '.', '[', '+', ']', '.', 'b', '.', '|'],
-    ['|', '.', '.', '.', '.', '_', '.', '.', '.', '.', '|'],
-    ['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
-    ['|', '.', '.', '.', '.', '^', '.', '.', '.', '.', '|'],
-    ['|', '.', 'b', '.', '[', '5', ']', '.', 'b', '.', '|'],
-    ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'p', '|'],
-    ['4', '-', '-', '-', '-', '-', '-', '-', '-', '-', '3']
-  ]
   
   // Additional cases (does not include the power up pellet that's inserted later in the vid)
   map.forEach((row, i) => {
@@ -217,6 +227,7 @@ const map = [
                 y: Boundary.height * i
               },
               image: createImage('./assets/pipeHorizontal.png')
+              
             })
           )
           break
